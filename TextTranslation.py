@@ -1,15 +1,13 @@
 from googletrans import Translator 
 
 def translate_text(text, from_lang='auto', to_lang='en', on_fail=None):
+
     try:
-        if not text.strip(): return ""
-        
-        translator = Translator(service_urls=['translate.googleapis.com'])
-        
-        result = translator.translate(text, dest=to_lang, src=from_lang)
-        return result.text
+        if (text == ""): return ""
+        translator = Translator()
+        translated_text =translator.translate(text=text, dest=to_lang, src=from_lang).text
+        return translated_text
     except Exception as e:
         if on_fail is not None:
             on_fail(e)
-        print(f"Erro na tradução: {e}")
     return ""
