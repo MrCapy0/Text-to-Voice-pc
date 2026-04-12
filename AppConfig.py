@@ -1,7 +1,7 @@
 import json
 import os.path
 
-import PySimpleGUI as gui
+import FreeSimpleGUI as gui
 
 config = {'api': '', 'url': '', 'theme':''}
 

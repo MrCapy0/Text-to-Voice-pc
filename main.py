@@ -3,6 +3,8 @@ from Locations import *
 from TextTranslation import *
 from VoiceAudioGenerator import *
 
+import FreeSimpleGUI as gui
+
 #gui.theme_previewer()
 
 __OPEN_CONFIGURATION_WINDOW = "Configurations"
