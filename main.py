@@ -24,11 +24,11 @@ __EVENT_CHANGE_AUDIO_VOICE = "-VOICE-SELECTION"
 # chamado quando o usuario traduz o texto
 def on_translate_source_text():
     source_text = window[__FIELD_SOURCE_TEXT].get()
-    current_language_name = window[__USER_TEXT_LANGUAGE_DROPDOWN].get()[0]
-    target_language_name = window[__TRANSLATION_TEXT_LANGUAGE_SELECTOR].get()[0]
+    current_language_name = window[__USER_TEXT_LANGUAGE_DROPDOWN].get()
+    target_language_name = window[__TRANSLATION_TEXT_LANGUAGE_SELECTOR].get()
 
-    current_text_language_ref = get_language_by_name(current_language_name).google_translation_ref[0]
-    target_translation_ref = get_language_by_name(target_language_name).google_translation_ref[0]
+    current_text_language_ref = get_language_by_name(current_language_name).google_translation_ref
+    target_translation_ref = get_language_by_name(target_language_name).google_translation_ref
 
     text_translated = translate_text(source_text, from_lang=current_text_language_ref, to_lang=target_translation_ref,
                                      on_fail=on_translate_text_error)
@@ -39,7 +39,7 @@ def on_translate_source_text():
 # chamado quando o usuario gera o audio de fala
 def on_generate_voice_audio():
     text_translated = window[__FIELD_TRANSLATED_TEXT].get()
-    voice_name = window[__EVENT_CHANGE_AUDIO_VOICE].get()[0]
+    voice_name = window[__EVENT_CHANGE_AUDIO_VOICE].get()
 
     if text_translated == "":
         gui.popup("Error on create Audio", "Translated text field is empty, please add something to this field")
@@ -74,14 +74,13 @@ def on_generate_audio_voice_error(error_code, error_message):
 
 # chamado quando o usuario muda o idioma da tradução do texto
 def on_change_text_translation_option():
-    selected_language_name = window[__TRANSLATION_TEXT_LANGUAGE_SELECTOR].get()[0]
+    selected_language_name = window[__TRANSLATION_TEXT_LANGUAGE_SELECTOR].get()
     language = get_language_by_name(selected_language_name)
 
-    # atualiza a lista de vozes disponiveis para a linguagem selecionada
-    voices = []
-    for l in language.ibm_voice_location: voices.append(l.name)
-    window[__EVENT_CHANGE_AUDIO_VOICE].update(value=voices[0][0], values=voices)
-    pass
+    if language:
+        voices = [v.name for v in language.ibm_voice_location]
+        # Atualiza o valor padrão para a primeira voz da lista
+        window[__EVENT_CHANGE_AUDIO_VOICE].update(value=voices[0], values=voices)
 
 
 load_config()
@@ -109,9 +108,11 @@ draw_audio_and_translation_field = gui.Column([
                default_value=get_all_locations_names()[0])],
     [gui.Button('Apply Translation', key=__EVENT_TRANSLATE_USER_TEXT, expand_x=True)],
     [gui.Text("Voice generation", expand_x=True)],
-    [gui.Combo(get_all_voices_name_by_language_name(locations[0].name[0]), key=__EVENT_CHANGE_AUDIO_VOICE,
-               enable_events=True, expand_x=True,
-               default_value=get_all_voices_name_by_language_name(locations[0].name[0])[0])],
+    [gui.Combo(get_all_voices_name_by_language_name(locations[0].name), 
+           key=__EVENT_CHANGE_AUDIO_VOICE,
+           enable_events=True, 
+           expand_x=True,
+           default_value=get_all_voices_name_by_language_name(locations[0].name)[0])],
     [gui.Button("Generate Audio", expand_x=True, key=__EVENT_GENERATE_AUDIO)]])
 
 layout = [[gui.Column([
@@ -122,6 +123,8 @@ layout = [[gui.Column([
         draw_audio_and_translation_field
     ]
 ])]]
+
+
 
 window = gui.Window('Text to Voice', layout=layout, size=(1400, 720), resizable=True)
 

@@ -1,80 +1,63 @@
 class Location():
-    name = "",
-    google_translation_ref = "",
-    ibm_voice_location = ""
-
     def __init__(self, name, google_translation_ref, ibm_voice_location):
-
-        self.name = name,
-        self.google_translation_ref = google_translation_ref,
+        self.name = name
+        self.google_translation_ref = google_translation_ref
         self.ibm_voice_location = ibm_voice_location
 
 class Voice():
-    name = "",
-    ibm_voice_ref=""
-
     def __init__(self, name, ibm_voice_ref):
-        self.name = name,
+        self.name = name
         self.ibm_voice_ref = ibm_voice_ref
 
 locations = [
-    Location(name= "English", 
-            google_translation_ref= "en", 
-            ibm_voice_location= [
-                Voice(name="Charlotte", ibm_voice_ref="en-GB_CharlotteV3Voice"),
-                Voice(name="James", ibm_voice_ref="en-GB_JamesV3Voice"),
-                Voice(name="Kate", ibm_voice_ref="en-GB_KateV3Voice"),
-                Voice(name="Allison", ibm_voice_ref="en-US_AllisonV3Voice"),
-                Voice(name="Emily", ibm_voice_ref="en-US_EmilyV3Voice"),
-                Voice(name="Henry", ibm_voice_ref="en-US_HenryV3Voice"),
-                Voice(name="Kevin", ibm_voice_ref="en-US_KevinV3Voice"),
-                Voice(name="Lisa", ibm_voice_ref="en-US_LisaV3Voice"),
-                Voice(name="Michael", ibm_voice_ref="en-US_MichaelV3Voice")
+    Location(name="English", 
+            google_translation_ref="en", 
+            ibm_voice_location=[
+                Voice(name="Australian Heidi", ibm_voice_ref="en-AU_HeidiNatural"),
+                Voice(name="Australian Jack", ibm_voice_ref="en-AU_JackNatural"),
+                Voice(name="Canadian Hannah", ibm_voice_ref="en-CA_HannahNatural"),
+                Voice(name="British Chloe", ibm_voice_ref="en-GB_ChloeNatural"),
+                Voice(name="EUA Ellie", ibm_voice_ref="en-US_EllieNatural"),
+                Voice(name="EUA Emma", ibm_voice_ref="en-US_EmmaNatural"),
+                Voice(name="EUA Ethan", ibm_voice_ref="en-US_EthanNatural"),
+                Voice(name="EUA Jackson", ibm_voice_ref="en-US_JacksonNatural"),
+                Voice(name="EUA Victoria", ibm_voice_ref="en-US_VictoriaNatural")
             ]),
 
-    Location(name= "Portuguese", 
-            google_translation_ref= "pt", 
-            ibm_voice_location=  [
-                Voice(name="Isabela", ibm_voice_ref="pt-BR_IsabelaV3Voice")
+    Location(name="Portuguese", 
+            google_translation_ref="pt", 
+            ibm_voice_location=[
+                Voice(name="Brasil Lucas", ibm_voice_ref="pt-BR_LucasNatural"),
+                Voice(name="Brasil Camila", ibm_voice_ref="pt-BR_CamilaNatural")
             ]),
 
-    Location(name= "Spainsh", 
-            google_translation_ref=  "es", 
-            ibm_voice_location=  [
-                Voice(name="Enrique", ibm_voice_ref="es-ES_EnriqueV3Voice"),
-                Voice(name="laura", ibm_voice_ref="es-ES_LauraV3Voice"),
-                Voice(name="Sofia", ibm_voice_ref="es-LA_SofiaV3Voice"),
-    ]),
+    Location(name="Spanish", 
+            google_translation_ref="es", 
+            ibm_voice_location=[
+                Voice(name="Latino Alejandro", ibm_voice_ref="es-LA_AlejandroNatural"),
+                Voice(name="Latino Daniela", ibm_voice_ref="es-LA_DanielaNatural")
+            ]),
 ]
 
 def get_language_by_name(name):
     for l in locations:
-        if l.name[0] == name:
+        # Removido o índice [0] pois agora 'name' é string pura
+        if l.name == name:
             return l
-
     return None
 
 def get_all_locations_names():
-    names = []
-    for l in locations: names.append(l.name)
-    return names
+    return [l.name for l in locations]
 
 def get_all_voices_name_by_language_name(language):
-
-    voices_names = []
-
     for l in locations:
-        if l.name[0] == language:
-            for v in l.ibm_voice_location:
-                voices_names.append(v.name)
-
-    return voices_names
+        if l.name == language:
+            return [v.name for v in l.ibm_voice_location]
+    return []
 
 def get_ibm_voice_by_voice_name(voice_name):
-
-    for l in locations:
-        for v in l.ibm_voice_location:
-            if v.name[0] == voice_name:
+    for loc in locations:
+        for v in loc.ibm_voice_location:
+            if v.name == voice_name:
                 return v.ibm_voice_ref
-    
-    return ""
+    return None

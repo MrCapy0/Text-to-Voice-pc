@@ -53,8 +53,8 @@ def config_window(on_close=None):
         __url_connection = window[__URL].get()
 
 
-        config['url'] = __url_connection.replace(" ", "")
-        config['api'] = __api_key.replace(" ", "")
+        config['url'] = __url_connection.strip()
+        config['api'] = __api_key.strip()
 
         selected_theme = window[__THEME_SELECTOR].get()
         print(config['theme'])
