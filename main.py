@@ -5,8 +5,6 @@ from VoiceAudioGenerator import *
 
 import FreeSimpleGUI as gui
 
-#gui.theme_previewer()
-
 __OPEN_CONFIGURATION_WINDOW = "Configurations"
 __ABOUT_WINDOW = "About"
 
@@ -21,7 +19,6 @@ __TRANSLATION_TEXT_LANGUAGE_SELECTOR = "-TRANSLATION-LANGUAGE-"
 __EVENT_CHANGE_AUDIO_VOICE = "-VOICE-SELECTION"
 
 
-# chamado quando o usuario traduz o texto
 def on_translate_source_text():
     source_text = window[__FIELD_SOURCE_TEXT].get()
     current_language_name = window[__USER_TEXT_LANGUAGE_DROPDOWN].get()
@@ -35,8 +32,6 @@ def on_translate_source_text():
 
     window[__FIELD_TRANSLATED_TEXT].update(text_translated)
 
-
-# chamado quando o usuario gera o audio de fala
 def on_generate_voice_audio():
     text_translated = window[__FIELD_TRANSLATED_TEXT].get()
     voice_name = window[__EVENT_CHANGE_AUDIO_VOICE].get()
@@ -56,7 +51,7 @@ def on_change_user_text(value):
 
 
 def on_translate_text_error(error):
-    gui.popup("Error on Translate Text", "Check if is connected with internet...")
+    gui.popup("Error on Translate Text", error)
 
 
 def on_generate_audio_voice_error(error_code, error_message):
@@ -71,15 +66,12 @@ def on_generate_audio_voice_error(error_code, error_message):
     else:
         gui.popup("Error", error_message + "\n error: " + str(error_code))
 
-
-# chamado quando o usuario muda o idioma da tradução do texto
 def on_change_text_translation_option():
     selected_language_name = window[__TRANSLATION_TEXT_LANGUAGE_SELECTOR].get()
     language = get_language_by_name(selected_language_name)
 
     if language:
         voices = [v.name for v in language.ibm_voice_location]
-        # Atualiza o valor padrão para a primeira voz da lista
         window[__EVENT_CHANGE_AUDIO_VOICE].update(value=voices[0], values=voices)
 
 

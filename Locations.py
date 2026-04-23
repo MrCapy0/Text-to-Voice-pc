@@ -41,7 +41,6 @@ locations = [
 
 def get_language_by_name(name):
     for l in locations:
-        # Removido o índice [0] pois agora 'name' é string pura
         if l.name == name:
             return l
     return None
