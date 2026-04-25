@@ -4,50 +4,57 @@ import requests
 import re
 
 def write_audio_file_from_text(text, voice, on_completed=None, on_fail=None):
-    
     service_url = config.config['url']
     api_key = config.config['api']
 
-    # 1. Verificação de Credenciais
     if not api_key or not service_url:
-        raise Exception('IBM Watson credentials not configured.')
+        if on_fail: on_fail(401, "IBM credentals not configured.")
+        return
     
-    # 2. Configuração de Diretórios (Equivalente ao FileSystem do JS)
-    # No Linux/Windows usamos caminhos padrão do OS
-    base_dir = os.path.join(os.getcwd(), 'Text to Speech Project', 'exports')
+    # Export dir.
+    base_dir = os.path.join(os.getcwd(), 'exports')
     if not os.path.exists(base_dir):
         os.makedirs(base_dir, exist_ok=True)
 
-    # 3. Montagem da URL e Parâmetros
-    # O requests aceita um dicionário 'params' que cuida do encodeURIComponent automaticamente
+    # Split text by empty lines.
+    phrases = [p.strip() for p in re.split(r'\n\s*\n', text) if p.strip()]
+
+    if not phrases:
+        if on_fail: on_fail(0, "Add a text to process.")
+        return
+
     url = f"{service_url.strip().rstrip('/')}/v1/synthesize"
-    query_params = {
-        'voice': voice,
-        'text': text
-    }
 
-    # 4. Execução do Fetch (GET com Basic Auth)
     try:
-        # No Python, ('apikey', key) no parâmetro auth faz o encodeBase64 automaticamente
-        response = requests.get(
-            url, 
-            params=query_params,
-            headers={'Accept': 'audio/mp3'},
-            auth=('apikey', api_key)
-        )
+        for index, phrase in enumerate(phrases, start=1):
+            query_params = {
+                'voice': voice,
+                'text': phrase
+            }
 
-        # 5. Tratamento de Erro
-        if not response.ok:
-            raise Exception(f"IBM TTS error ({response.status_code}): {response.text}")
+            response = requests.get(
+                url, 
+                params=query_params,
+                headers={'Accept': 'audio/mp3'},
+                auth=('apikey', api_key)
+            )
 
-        # 6. Processamento do Nome do Arquivo (Sanitize)
-        safe_name = re.sub(r'[^a-z0-9]', '_', "audio", flags=re.I).lower()
-        file_name = f"{safe_name}.mp3"
-        file_path = os.path.join(base_dir, file_name)
+            if not response.ok:
+                if on_fail: on_fail(response.status_code, response.text)
+                return
 
-        # 7. Escrita do Arquivo (Equivalente ao uint8Array/write)
-        with open(file_path, 'wb') as audio_file:
-            audio_file.write(response.content)
+            clean_name = re.sub(r'[^a-zA-Z0-9à-úÀ-Ú\s]', '', phrase).strip()
+            safe_name = clean_name[:50] if len(clean_name) > 50 else clean_name
+            
+            # Add an index on file name.
+            file_name = f"{index}-{safe_name.replace(' ', '_')}.mp3"
+            file_path = os.path.join(base_dir, file_name)
+
+            with open(file_path, 'wb') as audio_file:
+                audio_file.write(response.content)
+
+        if on_completed:
+            on_completed()
 
     except requests.exceptions.RequestException as e:
-        raise Exception(f"Erro na requisição: {e}")
+        if on_fail: on_fail(11001, f"Connection error: {str(e)}")
