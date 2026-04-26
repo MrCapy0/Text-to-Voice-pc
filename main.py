@@ -83,12 +83,12 @@ draw_menu_layout = gui.Menu([['&Options', [__OPEN_CONFIGURATION_WINDOW]], ['Abou
 
 draw_user_text_field = gui.Column([
     [gui.Text('Source Text', expand_x=True)],
-    [gui.Multiline(size=(80, 40), key=__FIELD_SOURCE_TEXT, expand_x=True)]
+    [gui.Multiline(size=(100, 70), key=__FIELD_SOURCE_TEXT, expand_x=True)]
 ])
 
 draw_translation_text_field = gui.Column([
     [gui.Text('Translated Text', expand_x=True)],
-    [gui.Multiline(size=(80, 40), key=__FIELD_TRANSLATED_TEXT, expand_x=True)]
+    [gui.Multiline(size=(100, 70), key=__FIELD_TRANSLATED_TEXT, expand_x=True)]
 ])
 
 draw_audio_and_translation_field = gui.Column([
@@ -118,7 +118,7 @@ layout = [[gui.Column([
 
 
 
-window = gui.Window('Text to Voice', layout=layout, size=(1400, 720), resizable=True)
+window = gui.Window('Text to Voice', layout=layout, size=(1920, 1080), resizable=True)
 
 while True:
     event, values = window.read()
